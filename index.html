@@ -188,6 +188,13 @@ button{font-family:inherit;}
 }
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--black);color:var(--gold-pale);padding:10px 18px;border-radius:8px;font-size:12.5px;opacity:0;transition:all .25s;pointer-events:none;z-index:60;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* Ocultar el badge "Powered by Netlify" que se inyecta en sitios publicados con Netlify Drop */
+#netlify-badge,
+.netlify-badge,
+div[id*="netlify-badge"],
+a[href*="netlify.com"]{
+  display:none !important;
+}
 </style>
 </head>
 <body>
@@ -276,7 +283,7 @@ button{font-family:inherit;}
 (function(){
   const DEFAULT_CONFIG = {
     shopName: 'Femely Cosmetics',
-    waNumber: '584146291946',
+    waNumber: '584246012696',
     sheetUrl: 'https://docs.google.com/spreadsheets/d/1eZWsEJJTkw9dwzY9xkaP5qB1VcY6rtHE81z5LSqsk3g/edit?usp=drivesdk'
   };
   const COLLECTION_PRICE = 250;
