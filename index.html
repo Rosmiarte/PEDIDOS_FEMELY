@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Femely Cosmetics — Pedidos</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --gold:#b9922f;
+  --gold-light:#e3c579;
+  --gold-pale:#f4e9cf;
+  --black:#141210;
+  --black-soft:#201d19;
+  --cream:#faf7f0;
+  --white:#ffffff;
+  --line:#e6ddc7;
+  --ink:#2a251e;
+  --muted:#8c8270;
+  --danger:#a5432e;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:'Manrope',sans-serif;}
+h1,h2,h3{font-family:'Fraunces',serif;}
+button{font-family:inherit;}
+
+/* ---------- Welcome screen ---------- */
+#welcome{
+  min-height:100vh;background:var(--black);color:var(--gold-pale);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 20px;text-align:center;position:relative;overflow:hidden;
+}
+#welcome::before{
+  content:'';position:absolute;top:-40px;right:-60px;width:280px;height:280px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'%3E%3Cg fill='none' stroke='%23b9922f' stroke-width='1.4' opacity='0.55'%3E%3Cpolygon points='90,10 140,38 140,94 90,122 40,94 40,38'/%3E%3Cpolygon points='150,10 200,38 200,94 150,122 100,94 100,38'/%3E%3Cpolygon points='210,10 260,38 260,94 210,122 160,94 160,38'/%3E%3Cpolygon points='120,70 170,98 170,154 120,182 70,154 70,98'/%3E%3Cpolygon points='180,70 230,98 230,154 180,182 130,154 130,98'/%3E%3Cpolygon points='150,130 200,158 200,214 150,242 100,214 100,158'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:no-repeat;pointer-events:none;
+}
+.brandmark{width:78px;height:78px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:10px;position:relative;z-index:1;}
+.brandmark::before{content:'';position:absolute;inset:6px;border:1px solid var(--gold);border-radius:50%;opacity:.5;}
+.brandmark span{font-family:'Fraunces',serif;font-weight:600;font-size:21px;letter-spacing:1px;color:var(--gold-light);}
+.brandmark-tag{font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:var(--gold-light);margin-bottom:20px;position:relative;z-index:1;}
+#welcome h1{font-size:clamp(30px,6vw,46px);font-weight:600;letter-spacing:0.5px;margin:0 0 6px;color:var(--white);position:relative;z-index:1;}
+#welcome .rule{width:56px;height:1px;background:var(--gold);margin:14px 0 18px;position:relative;z-index:1;}
+#welcome p.sub{font-size:14.5px;color:var(--gold-pale);opacity:.85;max-width:360px;line-height:1.6;margin:0 0 34px;position:relative;z-index:1;}
+.name-field{width:100%;max-width:340px;position:relative;z-index:1;}
+.name-field input{
+  width:100%;background:transparent;border:none;border-bottom:1.5px solid var(--gold);
+  color:var(--white);font-family:'Fraunces',serif;font-size:19px;text-align:center;
+  padding:10px 4px;outline:none;
+}
+.name-field input::placeholder{color:#786c4f;}
+.name-field input:focus{border-bottom-color:var(--gold-light);}
+#startBtn{
+  margin-top:26px;background:var(--gold);color:var(--black);border:none;border-radius:30px;
+  padding:14px 34px;font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;transition:background .2s, transform .1s;
+}
+#startBtn:hover{background:var(--gold-light);}
+#startBtn:active{transform:scale(0.97);}
+#startBtn:disabled{background:#4a4438;color:#8c8270;cursor:not-allowed;}
+
+/* ---------- Catalog app ---------- */
+#app{display:none;}
+#app.active{display:block;}
+
+.topbar{background:var(--black);color:var(--white);padding:16px 20px;position:sticky;top:0;z-index:30;}
+.topbar-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.brand-mini{display:flex;align-items:center;gap:10px;}
+.brand-mini .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);}
+.brand-mini span.bn{font-family:'Fraunces',serif;font-style:italic;font-size:19px;letter-spacing:.3px;}
+.who{font-size:12px;color:var(--gold-pale);opacity:.85;}
+.who button{background:none;border:none;color:var(--gold-light);text-decoration:underline;cursor:pointer;font-size:12px;padding:0;margin-left:6px;}
+.topbar-actions{display:flex;align-items:center;gap:10px;}
+.iconbtn{width:34px;height:34px;border-radius:50%;border:1px solid #423c2f;background:transparent;color:var(--gold-pale);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
+.iconbtn:hover{border-color:var(--gold);color:var(--gold-light);}
+
+.catbar{background:var(--white);border-bottom:1px solid var(--line);position:sticky;top:65px;z-index:29;overflow-x:auto;white-space:nowrap;padding:12px 20px;}
+.catbar-inner{max-width:1100px;margin:0 auto;display:flex;gap:8px;}
+.pill{border:1.3px solid var(--line);background:var(--white);color:var(--ink);padding:7px 15px;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;flex-shrink:0;}
+.pill.active{background:var(--black);border-color:var(--black);color:var(--gold-light);}
+.pill:not(.active):hover{border-color:var(--gold);}
+
+.settings{max-width:1100px;margin:16px auto 0;padding:0 20px;}
+.settings-box{background:var(--white);border:1.5px solid var(--black);border-radius:10px;padding:18px 20px;display:none;margin-bottom:6px;}
+.settings-box.open{display:block;}
+.settings-box label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px;margin-top:12px;}
+.settings-box label:first-child{margin-top:0;}
+.settings-box input{width:100%;padding:9px 10px;border:1.3px solid var(--line);border-radius:6px;font-size:13.5px;background:var(--cream);}
+.settings-box input:focus{outline:none;border-color:var(--gold);}
+.settings-box .hint{font-size:11.5px;color:var(--muted);margin-top:4px;}
+.settings-actions{display:flex;gap:10px;margin-top:16px;}
+.settings-actions button{border:none;border-radius:6px;padding:9px 16px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;}
+.btn-gold{background:var(--gold);color:var(--black);}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-ghost{background:transparent;color:var(--ink);border:1.3px solid var(--line) !important;}
+
+.status-banner{max-width:1100px;margin:14px auto 0;padding:0 20px;}
+.banner{border-radius:8px;padding:11px 15px;font-size:12.5px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.banner.warn{background:#fbeee1;color:#8a4a17;border:1px solid #edcda3;}
+.banner.loading{background:var(--gold-pale);color:#6b551c;border:1px solid var(--gold-light);}
+.banner button{background:none;border:1px solid currentColor;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;color:inherit;flex-shrink:0;}
+
+.layout{max-width:1100px;margin:0 auto;padding:18px 20px 110px;display:grid;grid-template-columns:1fr 300px;gap:26px;align-items:start;}
+@media (max-width:860px){.layout{grid-template-columns:1fr;}}
+
+.cat-section{margin-bottom:30px;}
+.cat-title{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.cat-title::after{content:'';flex:1;height:1px;background:var(--line);}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+.card{background:var(--white);border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative;display:flex;flex-direction:column;}
+.card .topline{height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light));}
+.card.out .topline{background:var(--line);}
+.imgbox{aspect-ratio:1/1;background:var(--cream);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;padding:22px;}
+.imgbox img{width:100%;height:100%;object-fit:contain;}
+.imgbox .ph{font-family:'Fraunces',serif;font-style:italic;font-size:26px;color:var(--gold);opacity:.55;}
+.ribbon{position:absolute;top:8px;left:-30px;background:var(--black);color:var(--gold-light);font-size:9.5px;letter-spacing:1px;text-transform:uppercase;padding:3px 34px;transform:rotate(-38deg);font-weight:700;}
+.cbody{padding:10px 11px 12px;display:flex;flex-direction:column;flex:1;}
+.pname{font-size:12.5px;font-weight:700;line-height:1.3;margin-bottom:5px;min-height:32px;}
+.pcode{font-size:10px;color:var(--muted);margin-bottom:5px;}
+.pprice{font-family:'Fraunces',serif;font-weight:600;color:var(--gold);font-size:15px;margin-bottom:10px;}
+.card.out .pname, .card.out .pprice{opacity:.45;}
+
+.qty-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;gap:6px;}
+.group-card{grid-column:1/-1;}
+.group-hint{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;padding:12px 14px 2px;}
+.variants-body{padding:6px 14px 16px;display:flex;flex-direction:column;gap:10px;}
+.variant-row{display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:var(--cream);border:1.3px solid var(--line);border-radius:10px;padding:14px 16px;}
+.variant-row .variant-info{width:100%;}
+.variant-row .pname{white-space:normal;word-break:break-word;overflow-wrap:anywhere;}
+.variant-row .qty-row{width:100%;justify-content:flex-start;}
+@media (min-width:640px){
+  .variant-row{flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:nowrap;}
+  .variant-row .qty-row{width:auto;flex-shrink:0;}
+}
+.variant-row.out{opacity:.6;}
+.variant-row .variant-info{flex:1;min-width:130px;display:flex;flex-direction:column;gap:6px;}
+.variant-row .pname{font-size:13.5px;font-weight:700;line-height:1.35;min-height:0;margin-bottom:0;color:var(--ink);}
+.variant-row .pprice{font-size:14px;font-weight:700;margin-bottom:0;background:var(--gold-pale);color:#7a5f18;padding:3px 9px;border-radius:5px;width:fit-content;}
+.variant-row .qty-row{margin-top:0;flex-shrink:0;gap:8px;}
+.variant-row .qbtn{width:30px;height:30px;font-size:16px;}
+.variant-row .qty-row input{width:42px;padding:7px 2px;font-size:14px;}
+.out-label.small{font-size:11px;padding:7px 11px;white-space:nowrap;}
+.qbtn{width:26px;height:26px;border:1.3px solid var(--black);background:var(--white);border-radius:6px;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;}
+.qbtn:hover{background:var(--black);color:var(--gold-light);}
+.qty-row input{width:38px;text-align:center;border:1.3px solid var(--line);border-radius:6px;padding:5px 2px;font-size:13px;font-weight:700;background:var(--cream);}
+.qty-row input:focus{outline:none;border-color:var(--gold);}
+.out-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:center;padding:6px 0;background:var(--cream);border-radius:6px;}
+
+.empty-state{border:1.5px dashed var(--line);border-radius:10px;padding:36px 18px;text-align:center;color:var(--muted);font-size:13.5px;grid-column:1/-1;}
+
+/* ---------- Receipt / order panel ---------- */
+.receipt{background:var(--black);color:var(--gold-pale);border-radius:12px;position:sticky;top:150px;overflow:hidden;box-shadow:0 10px 26px rgba(20,18,16,.18);}
+.receipt-head{padding:18px 18px 12px;text-align:center;border-bottom:1px dashed #3c362a;}
+.receipt-head .rl{font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);}
+.receipt-head .rn{font-family:'Fraunces',serif;font-style:italic;font-size:19px;color:var(--white);margin-top:4px;}
+.receipt-head .rc{font-size:11.5px;color:var(--gold-pale);opacity:.8;margin-top:6px;}
+
+.rlines{padding:10px 18px;max-height:280px;overflow-y:auto;}
+.rline{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 0;border-bottom:1px dotted #3c362a;font-size:12px;}
+.rline .rl-name{flex:1;line-height:1.3;}
+.rline .rl-qty{color:var(--gold-light);font-weight:700;}
+.rline .rl-sub{font-weight:700;min-width:52px;text-align:right;}
+.rline .rl-x{color:#8f7f4f;cursor:pointer;font-size:13px;}
+.rempty{text-align:center;font-size:12px;color:#8f7f4f;padding:18px 0;}
+
+.rtotals{padding:12px 18px 16px;border-top:1px dashed #3c362a;}
+.trow{display:flex;justify-content:space-between;font-size:12.5px;padding:2px 0;color:var(--gold-pale);}
+.trow.total{font-size:16.5px;font-weight:700;color:var(--white);border-top:1px solid #423c2f;margin-top:6px;padding-top:9px;}
+.trow.total span:last-child{color:var(--gold-light);}
+
+.sendbtn{display:block;width:calc(100% - 36px);margin:2px 18px 18px;background:var(--gold);color:var(--black);border:none;border-radius:8px;padding:13px;font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.8px;cursor:pointer;text-align:center;}
+.sendbtn:hover{background:var(--gold-light);}
+.sendbtn:disabled{background:#3c362a;color:#7a715c;cursor:not-allowed;}
+.sendbtn.secondary{background:transparent;color:var(--gold-light);border:1.3px solid var(--gold);margin-top:-4px;}
+.sendbtn.secondary:hover{background:rgba(185,146,47,0.12);}
+.sendbtn.secondary:disabled{border-color:#3c362a;color:#7a715c;}
+.wa-hint{font-size:10.5px;color:#8f7f4f;text-align:center;padding:0 18px 16px;line-height:1.5;}
+
+.mobile-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--black);color:var(--white);padding:13px 18px;justify-content:space-between;align-items:center;z-index:40;cursor:pointer;}
+.mobile-bar .msum{font-size:13px;}
+.mobile-bar .msum b{color:var(--gold-light);}
+@media (max-width:860px){
+  .mobile-bar{display:flex;}
+  .receipt{position:static;}
+  .catbar{top:57px;}
+}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--black);color:var(--gold-pale);padding:10px 18px;border-radius:8px;font-size:12.5px;opacity:0;transition:all .25s;pointer-events:none;z-index:60;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div id="welcome">
+  <div class="brandmark"><span>RG</span></div>
+  <div class="brandmark-tag">Bendiciones</div>
+  <h1 id="welcomeShop">Femely Cosmetics</h1>
+  <div class="rule"></div>
+  <p class="sub">Escribe tu nombre para realizar tu pedido</p>
+  <div class="name-field">
+    <input type="text" id="nameInput" placeholder="Tu nombre" autocomplete="off">
+  </div>
+  <button id="startBtn" disabled>Realizar pedido</button>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-mini">
+        <span class="dot"></span>
+        <span class="bn" id="topShopName">Femely Cosmetics</span>
+      </div>
+      <div class="topbar-actions">
+        <div class="who">Hola, <span id="whoName"></span><button id="changeNameBtn">cambiar</button></div>
+        <div class="iconbtn" id="gearBtn" title="Configuración">⚙️</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="catbar">
+    <div class="catbar-inner" id="catPills"></div>
+  </div>
+
+  <div class="settings">
+    <div class="settings-box" id="settingsBox">
+      <label>Nombre del negocio</label>
+      <input type="text" id="cfgShopName">
+      <label>Número de WhatsApp (código de país + número)</label>
+      <input type="text" id="cfgWaNumber">
+      <label>Enlace de tu Google Sheets</label>
+      <input type="text" id="cfgSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/.../edit">
+      <div class="hint">El Sheets debe estar compartido como "Cualquier persona con el enlace puede ver".</div>
+      <div class="settings-actions">
+        <button class="btn-gold" id="cfgSave">Guardar</button>
+        <button class="btn-ghost" id="cfgReload">Recargar catálogo ahora</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-banner" id="statusBanner"></div>
+
+  <div class="layout">
+    <div id="catalogRoot"></div>
+
+    <div>
+      <div class="receipt">
+        <div class="receipt-head">
+          <div class="rl">Pedido</div>
+          <div class="rn" id="receiptShop">Femely Cosmetics</div>
+          <div class="rc" id="receiptClient"></div>
+        </div>
+        <div class="rlines" id="rlines"></div>
+        <div class="rtotals">
+          <div class="trow"><span>Artículos</span><span id="itemCount">0</span></div>
+          <div class="trow"><span>Colecciones (÷$250)</span><span id="collectionsCount">0</span></div>
+          <div class="trow total"><span>Total</span><span id="cartTotal">$0.00</span></div>
+        </div>
+        <button class="sendbtn" id="sendBtn" disabled>⬇ Descargar y enviar por WhatsApp</button>
+        <div class="wa-hint" id="waHint">Se descarga tu pedido en Excel y se abre WhatsApp — solo adjunta el archivo descargado en el chat.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mobile-bar" id="mobileBar">
+  <span class="msum" id="mobileSummary">0 artículos · 0 colecciones · <b>$0.00</b></span>
+  <span>Ver pedido ↑</span>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script>
+(function(){
+  const DEFAULT_CONFIG = {
+    shopName: 'Femely Cosmetics',
+    waNumber: '584246012696',
+    sheetUrl: 'https://docs.google.com/spreadsheets/d/1eZWsEJJTkw9dwzY9xkaP5qB1VcY6rtHE81z5LSqsk3g/edit?usp=drivesdk'
+  };
+  const COLLECTION_PRICE = 250;
+
+  // Fallback snapshot in case the live Google Sheets fetch fails (CORS / offline / not shared publicly).
+  const FALLBACK_PRODUCTS = [
+    ['LINEA CAPILAR','PT-000101','BAÑO DE CREMA SILICONE / GERMEN DE TRIGO 240gr',8.70,'https://femelycosmetics.com.ve/wp-content/uploads/2024/09/Bano-de-Crema-Germen-de-Trigo-03-1024x908.webp',true],
+    ['LINEA CAPILAR','PT-000102','REPARADOR DE PUNTAS PARA EL CABELLO 30ml',10.50,'https://femelycosmetics.com.ve/wp-content/uploads/2024/09/Silicona-para-Cabello-30-ml-03.webp',true],
+    ['LINEA CAPILAR','PT-000103','PRE TRATAMIENTO PROTEINA DE SEDA 240ml',7.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/09/Pretratamiento-Proteina-de-Seda-Cabello-Graso-03-1.webp',true],
+    ['LINEA CAPILAR','PT-000104','PRE TRATAMIENTO SEMI DI LINO 240ml',7.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/09/Petratamiento-Semi-Lino.webp',true],
+    ['LINEA CAPILAR','PT-000113','REPARADOR DE PUNTAS PARA EL CABELLO 60ml',16.10,'https://femelycosmetics.com.ve/wp-content/uploads/2024/09/Silicona-para-Cabello-60-ml-03-1.webp',true],
+    ['LINEA CAPILAR','PT-000116','SHAMPOO CON ACEITE DE ARGAN 400ML',11.50,'',true],
+    ['LINEA CAPILAR','PT-000117','MASCARILLA CON ACEITE DE ARGAN 240gr',9.60,'',true],
+    ['LINEA CAPILAR','PT-000118','SHAMPOO MATIZADOR CON EXTRACTO DE FLOR DE JAMAICA',8.80,'',true],
+    ['LINEA CAPILAR','PT-000119','ACONDICIONADOR MATIZADOR CON EXTRACTO DE FLOR DE JAMAICA',8.20,'',true],
+    ['LINEA CAPILLAR'.replace('LL','L'),'PT-000120','KIT LOCION TRATAMIENTO NUTRITIVO (EFECTO BOTOX) 4 UNID. AMP. 10ML',16.60,'',true],
+    ['LINEA CAPILAR','PT-000121','KIT TONICO CAPILAR (PREVENCION CAIDA) 4 UNID. AMP. 10ML',16.60,'',true],
+    ['LINEA CAPILAR','PT-000122','KIT MAS HIDRATACION MENOS CAIDA (MIXTAS) 4 UNID. AMP. 10ML',16.60,'',true],
+    ['LINEA CAPILAR','PT-000123','KIT HIDRATACION PROFUNDA (MIXTAS) 4 UNID. AMP. 10ML',16.00,'',true],
+    ['LINEA CAPILAR','PT-000124','PROTECTOR TERMICO CREMA 90gr',0,'',false],
+    ['LINEA DE QUERATINA','PT-000105','PRE TRATAMIENTO DE QUERATINA 400ml',10.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/Pre-Tratamiento-Explosion-de-Queratina-386x1024.webp',true],
+    ['LINEA DE QUERATINA','PT-000106','POST TRATAMIENTO DE QUERATINA 400ml',9.50,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/Post-Tratamiento-Explosion-de-Queratina.webp',true],
+    ['LINEA DE QUERATINA','PT-000107','CREMA PARA PEINAR QUERATINA 150ml',6.60,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/Crema-para-Peinar-Explosion-de-Queratina-150g.png',true],
+    ['LINEA DE QUERATINA','PT-000114','CREMA PARA PEINAR QUERATINA 300ml',10.50,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/Crema-para-Peinar-Explosion-de-Queratina-300g-427x1024.webp',true],
+    ['LINEA DE OLIVA','PT-000108','PRE TRATAMIENTO DE OLIVA 400ml',9.90,'',true],
+    ['LINEA DE OLIVA','PT-000109','MASCARILLA CAPILAR CON ACEITE DE OLIVA 240gr',9.00,'',true],
+    ['LINEA DE OLIVA','PT-000110','MASCARILLA CAPILAR CON ACEITE DE OLIVA 400gr',0,'',true],
+    ['LINEA DE OLIVA','PT-000111','GEL DE BAÑO OLIVA 240ml',6.90,'',true],
+    ['LINEA DE OLIVA','PT-000112','CREMA CORPORAL OLIVA 240g',8.80,'',true],
+    ['LINEA PARA BEBES','PT-000201','NANNY CREMA ANTIPAÑALITIS PARA BEBE 120gr',9.80,'',true],
+    ['LINEA PARA BEBES','PT-000202','NANNY COLONIA PARA BEBE 120ml',6.60,'',true],
+    ['LINEA PARA BEBES','PT-000203','NANNY LOCION PARA BEBE 120ml',5.10,'',true],
+    ['LINEA PARA BEBES','PT-000204','NANNY PRE TRATAMIENO 120ml',5.30,'',true],
+    ['LINEA FASHION GIRL','PT-000301','FASHION GIRL BODY LOTION 200ml',7.30,'',true],
+    ['LINEA FASHION GIRL','PT-000302','FASHION GIRL CREMA PARA PEINAR 200ml',7.30,'',true],
+    ['LINEA FASHION GIRL','PT-000303','FASHION GIRL SPLASH 120ml',7.90,'',true],
+    ['LINEA FASHION GIRL','PT-000304','FASHION GIRL PRE TRATAMIENTO 200ml',6.90,'',true],
+    ['LINEA FASHION GIRL','PT-000305','FASHION GIRL ANTITRANSPIRANTE 60ml',5.00,'',true],
+    ['LINEA CORPORAL','PT-000401','BODY LOTION SECRET FASHION PERA 240ml',8.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-10-576x1024.webp',true],
+    ['LINEA CORPORAL','PT-000402','SPLASH SECRET FASHION PERA 240ml',10.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-10-576x1024.webp',true],
+    ['LINEA CORPORAL','PT-000403','GEL DE BAÑO SECRET FASHION PERA 240ml',7.50,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-10-576x1024.webp',true],
+    ['LINEA CORPORAL','PT-000404','BODY LOTION SECRET FASHION FRAMBUESA 240ml',8.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-11-576x1024.webp',true],
+    ['LINEA CORPORAL','PT-000405','SPLASH SECRET FASHION FRAMBUESA 240ml',10.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-11-576x1024.webp',true],
+    ['LINEA CORPORAL','PT-000406','GEL DE BAÑO SECRET FASHION FRAMBUESA 240ml',7.50,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-11-576x1024.webp',true],
+    ['LINEA CORPORAL','PT-000407','BODY LOTION SECRET FASHION VAINILLA 240ml',8.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-12-576x1024.webp',true],
+    ['LINEA CORPORAL','PT-000408','SPLASH SECRET FASHION VAINILLA 240ml',10.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-12-576x1024.webp',true],
+    ['LINEA CORPORAL','PT-000409','GEL DE BAÑO SECRET FASHION VAINILLA 240ml',7.50,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-12-576x1024.webp',true],
+    ['LINEA CORPORAL','PT-000412','BODY LOTION SECRET FASHION LOVE 240ml',8.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-12-1.webp',true],
+    ['LINEA CORPORAL','PT-000413','SPLASH SECRET FASHION LOVE 240ml',10.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-12-1.webp',true],
+    ['LINEA CORPORAL','PT-000414','BODY LOTION SECRET FASHION SPELL 240ml',8.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-13.webp',true],
+    ['LINEA CORPORAL','PT-000415','SPLASH SECRET FASHION SPELL 240ml',10.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-13.webp',true],
+    ['LINEA CORPORAL','PT-000416','ACEITE CORPORAL HIDRATANTE DE COCO',13.60,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-11-1-270x1024.webp',true],
+    ['LINEA CORPORAL','PT-000417','ACEITE CORPORAL HIDRATANTE DE ALMENDRA',13.60,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-10-1-273x1024.webp',true],
+    ['LINEA CORPORAL','PT-000410','ANTITRANSPIRANTE CABALLERO 90ml',6.60,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-14-576x1024.webp',true],
+    ['LINEA CORPORAL','PT-000411','ANTITRANSPIRANTE DAMA 90ml',6.60,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-14-576x1024.webp',true],
+    ['LINEA CORPORAL','PT-000418','ANTITRANSPIRANTE EN CREMA UNISEX 90ml',7.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-30-558x1024.webp',true],
+    ['LINEA CORPORAL','PT-000419','CREMA PARA LAS MANOS GUANTE DE SILICONA 80gr',7.10,'',true],
+    ['LINEA CORPORAL','PT-000420','CREMA HIDRATANTE CORPORAL BABA DE CARACOL 200gr',10.40,'',true],
+    ['LINEA CORPORAL','PT-000421','CREMA EXFOLIANTE PARA PIES 200gr',13.50,'',true],
+    ['LINEA CORPORAL','PT-000422','PROTECTOR SOLAR CORPORAL 50FPS 120gr',12.00,'',true],
+    ['LINEA CORPORAL','PT-000423','BRONCEADOR EN SPRAY FPS 4 120ml',14.40,'',true],
+    ['LINEA DE HIGIENE','PT-000501','GEL ANTIBACTERIAL AQUA 100ml',5.00,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-31.webp',true],
+    ['LINEA DE HIGIENE','PT-000502','GEL INTIMO 200ml',8.30,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-32-453x1024.webp',true],
+    ['LINEA TERAPEUTICA','PT-000601','ARNICA ROLL ON CURCUMA CHUCHUGUAZA UÑA DE GATO 90ml',6.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/ARNICA-576x1024.webp',true],
+    ['LINEA TERAPEUTICA','PT-000602','GEL DE ARNICA CURCUMA CHUCHUGUAZA UÑA DE GATO 240gr',10.60,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/ARNICA-576x1024.webp',true],
+    ['LINEA TERAPEUTICA','PT-000603','HOT CREAM 240gr',11.60,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/sp2-1024x892.webp',true],
+    ['LINEA TERAPEUTICA','PT-000604','HOT CREAM 120gr',7.60,'',true],
+    ['LINEA TERAPEUTICA','PT-000605','MENTA EUCALIPTO',7.60,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/sp1.webp',true],
+    ['LINEA TERAPEUTICA','PT-000606','HIELO GEL, GEL FRIO CORPORAL 240gr',10.60,'',true],
+    ['LINEA TERAPEUTICA','PT-000607','GEL REDUCTOR CORPORAL TERMOACTIVO',10.10,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/sp3-1024x894.webp',true],
+    ['LINEA TERAPEUTICA','PT-000608','ARTRI FRESH ROLL ON 90ML',7.50,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/ARTRI-576x1024.webp',true],
+    ['LINEA TERAPEUTICA','PT-000609','ARTRI FRESH CREMA 200gr',11.00,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/ARTRI-576x1024.webp',true],
+    ['LINEA DE OZONO','PT-000701','ACEITE OZONIZADO GIRASOL - COCO 60ml',19.80,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-10-2-447x1024.webp',true],
+    ['LINEA DE OZONO','PT-000702','DESODORANTE ANTITRANSPIRANTE DE OZONO DAMA 90ml',6.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-12-2-576x1024.webp',true],
+    ['LINEA DE OZONO','PT-000703','DESODORANTE ANTITRANSPIRANTE DE OZONO CABALLERO 90ml',6.90,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-12-2-576x1024.webp',true],
+    ['LINEA DE OZONO','PT-000705','OZONE MENTHOL EUB 60GR',7.80,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-19.webp',true],
+    ['LINEA DE OZONO','PT-000706','OZONE PIERNAS CANSADAS ROLL-ON 90gr',7.00,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-17-576x1024.webp',true],
+    ['LINEA DE OZONO','PT-000707','OZONE PIERNAS CANSADAS CREMA 200gr',11.30,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-17-576x1024.webp',true],
+    ['LINEA DE OZONO','PT-000708','OZONE SHAMPOO ANTICASPA 240gr',10.50,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-16-442x1024.webp',true],
+    ['LINEA DE OZONO','PT-000709','OZONE CREMA ANTIEDAD (USO NOCTURNO) 40gr',14.00,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-11-2-300x1024.webp',true],
+    ['LINEA DE OZONO','PT-000710','OZONE BUCAL FRESH MINT SPRAY',5.50,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-20.webp',true],
+    ['LINEA DE OZONO','PT-000711','OZONE BUCAL ENJUAGUE BUCAL ANTIBACTERIAL OZONIZADO',8.80,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-18-473x1024.webp',true],
+    ['LINEA DE OZONO','PT-000712','OZONE SHAMPOO ANTICAIDA 240gr',10.00,'',true],
+    ['LINEA DE OZONO','PT-000713','OZONE TONICO CAPILAR ANTICAIDA 120ml',14.90,'',true],
+    ['LINEA FOR MEN','PT-000801','SHAMPOO & ACONDICIONADOR 3 EN 1 FOR MEN',10.60,'',true],
+    ['LINEA FOR MEN','PT-000802','SPLASH FOR MEN EVOLUTION 240ML',14.90,'',true],
+    ['LINEA FOR MEN','PT-000803','SPLASH VICTORY MEN 240ML',14.90,'',true],
+    ['LINEA FOR MEN','PT-000804','SPLASH ADVENTURE 240ML',22.00,'',true],
+    ['LINEA FOR MEN','PT-000805',"SPLASH I'MANLY 240ML",14.90,'',true],
+    ['LINEA FOR MEN','PT-000806','SPLASH I.M POUR HOMME 240ML',22.00,'',true],
+    ['LINEA EDICION ESPECIAL','PT-000901','SPLASH CORPORAL UNISEX EXQUISITE WATER 240ML',11.90,'',true],
+    ['LINEA EDICION ESPECIAL','PT-000902','KIT DE DAMA (SPLASH Y BODY LOTTION 200ml)',0,'',false],
+    ['LINEA EDICION ESPECIAL','PT-000903','KIT DE CABALLERO (SPLASH 200ml Y SHAMPOO 3 EN 1, 240ml)',0,'',false],
+    ['LINEA EDICION ESPECIAL','PT-000904','FASHION GIRL SPLASH 120ml (EDICION ESPECIAL)',0,'',false],
+    ['LINEA EDICION ESPECIAL','PT-000905','KIT DE DAMA / CABALLERO (SPLASH DAMA Y SPLASH CABALLERO 200ML)',0,'',false],
+    ['LINEA EDICION ESPECIAL','PT-000906','BODY LOTION SECRET FASHION LOCION CORPORAL 240ml',0,'',false],
+    ['LINEA EDICION ESPECIAL','PT-000907','SPLASH CORPORAL SECRET FASHION 120ml',0,'',false],
+    ['LINEA EDICION ESPECIAL','PT-000908','TALCO PERFUMADO CORPORAL 120gr',16.50,'',true],
+    ['LINEA FACIAL','PT-001001','TONICO FACIAL 120ML',6.70,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-22-348x1024.webp',true],
+    ['LINEA FACIAL','PT-001002','LIMPIADORA FACIAL (CUTIS GRASO)120gr',7.00,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-24-488x1024.webp',true],
+    ['LINEA FACIAL','PT-001003','LIMPIADORA FACIAL (CUTIS SECO)120gr',7.00,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-23-324x1024.webp',true],
+    ['LINEA FACIAL','PT-001004','JABON LIQUIDO FACIAL 120ML',7.20,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-25-324x1024.webp',true]
+  ].map(r => ({cat:r[0], code:r[1], name:r[2], price:r[3], img:r[4], avail:r[5]}));
+
+  let config = Object.assign({}, DEFAULT_CONFIG);
+  let products = [];
+  let cart = {}; // code -> qty
+  let activeCat = 'TODAS';
+  let clientName = '';
+
+  const $ = sel => document.querySelector(sel);
+  const esc = s => { const d=document.createElement('div'); d.textContent = s==null?'':String(s); return d.innerHTML; };
+  const fmt = n => '$' + Number(n||0).toFixed(2);
+
+  function toast(msg){
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2200);
+  }
+
+  function titleCase(s){
+    return String(s||'').toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase());
+  }
+
+  function normalize(s){
+    return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  }
+
+  function extractSheetId(url){
+    const m = String(url||'').match(/\/d\/([a-zA-Z0-9-_]+)/);
+    return m ? m[1] : null;
+  }
+  function extractGid(url){
+    const m = String(url||'').match(/[?&#]gid=([0-9]+)/);
+    return m ? m[1] : '0';
+  }
+
+  function parsePrice(raw){
+    if(raw == null) return 0;
+    let s = String(raw).replace(/[^0-9.,]/g,'').trim();
+    if(!s) return 0;
+    if(s.includes(',') && s.includes('.')){
+      s = s.replace(/\./g,'').replace(',', '.');
+    } else if(s.includes(',')){
+      s = s.replace(',', '.');
+    }
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : n;
+  }
+
+  function isAvailable(raw){
+    const n = normalize(raw);
+    return n.startsWith('disp') || n === 'si' || n === 'sí' || n === 'true' || n === '1';
+  }
+
+  function parseCSV(str){
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+    for(let i=0;i<str.length;i++){
+      const c = str[i], next = str[i+1];
+      if(inQuotes){
+        if(c === '"' && next === '"'){ field += '"'; i++; }
+        else if(c === '"'){ inQuotes = false; }
+        else { field += c; }
+      } else {
+        if(c === '"'){ inQuotes = true; }
+        else if(c === ','){ row.push(field); field=''; }
+        else if(c === '\r'){ /* skip */ }
+        else if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+        else { field += c; }
+      }
+    }
+    if(field.length>0 || row.length>0){ row.push(field); rows.push(row); }
+    return rows;
+  }
+
+  function productsFromCSV(text){
+    const rows = parseCSV(text);
+    let headerIdx = -1, cols = {};
+    for(let i=0;i<rows.length;i++){
+      const norm = rows[i].map(normalize);
+      const cIdx = norm.findIndex(c => c.includes('categor'));
+      const nIdx = norm.findIndex(c => c.includes('nombre'));
+      if(cIdx !== -1 && nIdx !== -1){
+        headerIdx = i;
+        cols.cat = cIdx;
+        cols.nombre = nIdx;
+        cols.codigo = norm.findIndex(c => c.includes('codig'));
+        cols.precio = norm.findIndex(c => c.includes('precio'));
+        cols.enlace = norm.findIndex(c => c.includes('enlace') || c.includes('imagen') || c.includes('foto'));
+        cols.disp = norm.findIndex(c => c.includes('disponib'));
+        break;
+      }
+    }
+    if(headerIdx === -1) throw new Error('No se encontró la fila de encabezados');
+
+    const out = [];
+    for(let i=headerIdx+1;i<rows.length;i++){
+      const r = rows[i];
+      const name = (r[cols.nombre]||'').trim();
+      const cat = (r[cols.cat]||'').trim();
+      if(!name && !cat) continue;
+      if(!name) continue;
+      out.push({
+        cat: cat || 'OTROS',
+        code: cols.codigo!==-1 ? (r[cols.codigo]||'').trim() : '',
+        name,
+        price: cols.precio!==-1 ? parsePrice(r[cols.precio]) : 0,
+        img: cols.enlace!==-1 ? (r[cols.enlace]||'').trim() : '',
+        avail: cols.disp!==-1 ? isAvailable(r[cols.disp]) : true
+      });
+    }
+    return out;
+  }
+
+  async function fetchLiveCatalog(){
+    const id = extractSheetId(config.sheetUrl);
+    if(!id) throw new Error('Enlace de Sheets inválido');
+    const gid = extractGid(config.sheetUrl);
+    const url = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('No se pudo leer el Sheets (¿está compartido públicamente?)');
+    const text = await res.text();
+    const parsed = productsFromCSV(text);
+    if(!parsed.length) throw new Error('El Sheets no devolvió productos');
+    return parsed;
+  }
+
+  function setBanner(html){
+    $('#statusBanner').innerHTML = html || '';
+  }
+
+  async function loadCatalog(showLoading){
+    if(showLoading){
+      setBanner('<div class="banner loading">Cargando catálogo en vivo desde Google Sheets…</div>');
+    }
+    try{
+      products = await fetchLiveCatalog();
+      setBanner('');
+    }catch(e){
+      products = FALLBACK_PRODUCTS.slice();
+      setBanner(`<div class="banner warn"><span>No se pudo cargar el catálogo en vivo — mostrando una copia guardada. Revisa que el Sheets esté compartido como "cualquiera con el enlace".</span><button id="retryBtn">Reintentar</button></div>`);
+      const rb = document.getElementById('retryBtn');
+      if(rb) rb.onclick = () => loadCatalog(true);
+    }
+    buildCategoryPills();
+    renderCatalog();
+    renderCart();
+  }
+
+  function buildCategoryPills(){
+    const cats = ['TODAS', ...Array.from(new Set(products.map(p=>p.cat)))];
+    const wrap = $('#catPills');
+    wrap.innerHTML = '';
+    cats.forEach(c=>{
+      const btn = document.createElement('button');
+      btn.className = 'pill' + (c===activeCat ? ' active' : '');
+      btn.textContent = c==='TODAS' ? 'Todas' : titleCase(c);
+      btn.onclick = () => { activeCat = c; buildCategoryPills(); renderCatalog(); };
+      wrap.appendChild(btn);
+    });
+  }
+
+  function groupByImage(items){
+    const byImg = {};
+    items.forEach(p=>{
+      if(p.img){
+        if(!byImg[p.img]) byImg[p.img] = [];
+        byImg[p.img].push(p);
+      }
+    });
+    const grouped = [];
+    const used = new Set();
+    items.forEach(p=>{
+      if(used.has(p.code)) return;
+      if(p.img && byImg[p.img].length > 1){
+        const group = byImg[p.img];
+        group.forEach(g=>used.add(g.code));
+        grouped.push({type:'group', img:p.img, products:group});
+      } else {
+        used.add(p.code);
+        grouped.push({type:'single', product:p});
+      }
+    });
+    return grouped;
+  }
+
+  function wireQtyControls(scope, p){
+    const input = scope.querySelector(`input[data-code="${cssEsc(p.code)}"]`);
+    const minus = scope.querySelector(`[data-act="minus"][data-code="${cssEsc(p.code)}"]`);
+    const plus = scope.querySelector(`[data-act="plus"][data-code="${cssEsc(p.code)}"]`);
+    minus.onclick = () => setQty(p.code, (cart[p.code]||0) - 1);
+    plus.onclick = () => setQty(p.code, (cart[p.code]||0) + 1);
+    input.addEventListener('change', e => setQty(p.code, parseInt(e.target.value)||0));
+  }
+
+  function cssEsc(s){ return String(s).replace(/"/g,'\\"'); }
+
+  function renderSingleCard(p){
+    const card = document.createElement('div');
+    card.className = 'card' + (p.avail ? '' : ' out');
+    const qty = cart[p.code] || 0;
+    card.innerHTML = `
+      <div class="topline"></div>
+      <div class="imgbox">
+        ${!p.avail ? '<div class="ribbon">Agotado</div>' : ''}
+        ${p.img ? `<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;ph&quot;>F</div>'">` : '<div class="ph">F</div>'}
+      </div>
+      <div class="cbody">
+        <div class="pname">${esc(titleCase(p.name))}</div>
+        ${p.code ? `<div class="pcode">${esc(p.code)}</div>` : ''}
+        <div class="pprice">${fmt(p.price)}</div>
+        ${p.avail
+          ? `<div class="qty-row">
+               <button class="qbtn" data-act="minus" data-code="${esc(p.code)}">−</button>
+               <input type="number" min="0" value="${qty}" data-code="${esc(p.code)}">
+               <button class="qbtn" data-act="plus" data-code="${esc(p.code)}">+</button>
+             </div>`
+          : `<div class="out-label">No disponible</div>`}
+      </div>
+    `;
+    if(p.avail) wireQtyControls(card, p);
+    return card;
+  }
+
+  function renderGroupCard(img, group){
+    const card = document.createElement('div');
+    card.className = 'card group-card';
+    const allOut = group.every(p => !p.avail);
+    if(allOut) card.classList.add('out');
+    const variantsHtml = group.map(p=>{
+      const qty = cart[p.code] || 0;
+      return `
+        <div class="variant-row${p.avail ? '' : ' out'}">
+          <div class="variant-info">
+            <div class="pname">${esc(titleCase(p.name))}</div>
+            <div class="pprice">${fmt(p.price)}</div>
+          </div>
+          ${p.avail
+            ? `<div class="qty-row">
+                 <button class="qbtn" data-act="minus" data-code="${esc(p.code)}">−</button>
+                 <input type="number" min="0" value="${qty}" data-code="${esc(p.code)}">
+                 <button class="qbtn" data-act="plus" data-code="${esc(p.code)}">+</button>
+               </div>`
+            : `<div class="out-label small">Agotado</div>`}
+        </div>
+      `;
+    }).join('');
+    card.innerHTML = `
+      <div class="topline"></div>
+      <div class="imgbox">
+        ${allOut ? '<div class="ribbon">Agotado</div>' : ''}
+        <img src="${esc(img)}" alt="${esc(group[0].name)}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=&quot;ph&quot;>F</div>'">
+      </div>
+      <div class="group-hint">Elige la cantidad de cada una</div>
+      <div class="cbody variants-body">${variantsHtml}</div>
+    `;
+    group.forEach(p => { if(p.avail) wireQtyControls(card, p); });
+    return card;
+  }
+
+  function renderCatalog(){
+    const root = $('#catalogRoot');
+    root.innerHTML = '';
+    const cats = activeCat === 'TODAS'
+      ? Array.from(new Set(products.map(p=>p.cat)))
+      : [activeCat];
+
+    if(products.length === 0){
+      root.innerHTML = '<div class="empty-state">No hay productos disponibles por ahora.</div>';
+      return;
+    }
+
+    cats.forEach(cat=>{
+      const items = products.filter(p=>p.cat===cat);
+      if(!items.length) return;
+      const section = document.createElement('div');
+      section.className = 'cat-section';
+      section.innerHTML = `<div class="cat-title">${esc(titleCase(cat))}</div>`;
+      const grid = document.createElement('div');
+      grid.className = 'grid';
+      groupByImage(items).forEach(entry=>{
+        const card = entry.type === 'group'
+          ? renderGroupCard(entry.img, entry.products)
+          : renderSingleCard(entry.product);
+        grid.appendChild(card);
+      });
+      section.appendChild(grid);
+      root.appendChild(section);
+    });
+  }
+
+  function setQty(code, qty){
+    if(qty <= 0) delete cart[code];
+    else cart[code] = qty;
+    renderCatalog();
+    renderCart();
+  }
+
+  function renderCart(){
+    const codes = Object.keys(cart);
+    const wrap = $('#rlines');
+    wrap.innerHTML = '';
+    let total = 0, count = 0;
+
+    if(codes.length === 0){
+      wrap.innerHTML = '<div class="rempty">El pedido está vacío</div>';
+    } else {
+      codes.forEach(code=>{
+        const p = products.find(pp=>pp.code===code);
+        if(!p) return;
+        const qty = cart[code];
+        const sub = p.price * qty;
+        total += sub; count += qty;
+        const line = document.createElement('div');
+        line.className = 'rline';
+        line.innerHTML = `
+          <span class="rl-name">${esc(titleCase(p.name))}</span>
+          <span class="rl-qty">×${qty}</span>
+          <span class="rl-sub">${fmt(sub)}</span>
+          <span class="rl-x" title="Quitar">✕</span>
+        `;
+        line.querySelector('.rl-x').onclick = () => setQty(code, 0);
+        wrap.appendChild(line);
+      });
+    }
+
+    $('#itemCount').textContent = count;
+    $('#cartTotal').textContent = fmt(total);
+    $('#collectionsCount').textContent = (total / COLLECTION_PRICE).toFixed(2);
+    $('#sendBtn').disabled = count === 0;
+    $('#mobileSummary').innerHTML = `${count} artículo${count===1?'':'s'} · ${(total/COLLECTION_PRICE).toFixed(2)} col. · <b>${fmt(total)}</b>`;
+  }
+
+  function buildOrderSheetData(){
+    // Replica la plantilla "FORMATO DE ENTREGA": NOMBRE arriba, encabezado,
+    // luego cada categoría con su lista completa de productos y la cantidad pedida.
+    const rows = [];
+    rows.push(['NOMBRE', clientName]);
+    rows.push([]);
+    rows.push([]);
+    rows.push([]);
+    rows.push([]);
+    rows.push(['CODIGO','PRODUCTO','PRECIO','CANTIDAD','TOTAL']);
+
+    const catsInOrder = [];
+    products.forEach(p => { if(!catsInOrder.includes(p.cat)) catsInOrder.push(p.cat); });
+
+    let grandTotal = 0;
+    catsInOrder.forEach(cat=>{
+      rows.push(['', titleCase(cat), '', '', '']);
+      products.filter(p=>p.cat===cat).forEach(p=>{
+        const qty = cart[p.code] || 0;
+        const sub = qty ? +(p.price * qty).toFixed(2) : 0;
+        grandTotal += sub;
+        rows.push([p.code, titleCase(p.name), +p.price.toFixed(2), qty || '', sub || 0]);
+      });
+    });
+
+    rows.push([]);
+    rows.push(['', '', '', 'TOTAL', +grandTotal.toFixed(2)]);
+    rows.push(['', '', '', 'COLECCIONES (÷'+COLLECTION_PRICE+')', +(grandTotal/COLLECTION_PRICE).toFixed(2)]);
+    return rows;
+  }
+
+  function downloadExcel(){
+    if(typeof XLSX === 'undefined'){
+      toast('No se pudo cargar el generador de Excel. Intenta de nuevo en unos segundos.');
+      return;
+    }
+    const data = buildOrderSheetData();
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = [{wch:12},{wch:48},{wch:10},{wch:11},{wch:11}];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Pedido');
+    const safeName = (clientName||'pedido').trim().replace(/[^a-zA-Z0-9]+/g,'-');
+    const dateStr = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, `pedido-${safeName}-${dateStr}.xlsx`);
+  }
+
+  function buildMessage(){
+    const lines = [];
+    lines.push(`🧾 *Nuevo pedido - ${config.shopName}*`);
+    lines.push(`Cliente: ${clientName}`);
+    lines.push('');
+    lines.push('📎 Adjunto el archivo con el detalle del pedido.');
+    return lines.join('\n');
+  }
+
+  function sendOrder(){
+    const number = (config.waNumber||'').replace(/[^0-9]/g,'');
+    if(!number){ toast('Configura el número de WhatsApp en ⚙️'); return; }
+    const btn = $('#sendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Descargando archivo…';
+    downloadExcel();
+    setTimeout(() => {
+      toast('📥 Archivo descargado');
+      btn.textContent = 'Abriendo WhatsApp…';
+      setTimeout(() => {
+        const text = encodeURIComponent(buildMessage());
+        window.open(`https://wa.me/${number}?text=${text}`, '_blank');
+        btn.textContent = '⬇ Descargar y enviar por WhatsApp';
+        btn.disabled = Object.keys(cart).length === 0;
+      }, 900);
+    }, 900);
+  }
+
+  // ---- init / config persistence ----
+  async function storageGet(key){
+    try{
+      if(window.storage && typeof window.storage.get === 'function'){
+        const r = await window.storage.get(key, false);
+        return r ? r.value : null;
+      }
+    }catch(e){ /* no disponible aquí, seguimos con el respaldo */ }
+    try{ return localStorage.getItem(key); }catch(e){ return null; }
+  }
+
+  async function storageSet(key, value){
+    try{
+      if(window.storage && typeof window.storage.set === 'function'){
+        await window.storage.set(key, value, false);
+        return true;
+      }
+    }catch(e){ /* no disponible aquí, seguimos con el respaldo */ }
+    try{ localStorage.setItem(key, value); return true; }catch(e){ return false; }
+  }
+
+  async function loadConfig(){
+    try{
+      const raw = await storageGet('femely-config');
+      if(raw) config = Object.assign({}, DEFAULT_CONFIG, JSON.parse(raw));
+    }catch(e){ /* usar valores por defecto */ }
+    $('#welcomeShop').textContent = config.shopName;
+    $('#topShopName').textContent = config.shopName;
+    $('#receiptShop').textContent = config.shopName;
+    $('#cfgShopName').value = config.shopName;
+    $('#cfgWaNumber').value = config.waNumber;
+    $('#cfgSheetUrl').value = config.sheetUrl;
+  }
+
+  async function saveConfig(){
+    const ok = await storageSet('femely-config', JSON.stringify(config));
+    if(!ok) toast('No se pudo guardar la configuración');
+  }
+
+  // ---- wiring ----
+  $('#nameInput').addEventListener('input', e=>{
+    $('#startBtn').disabled = e.target.value.trim().length === 0;
+  });
+  $('#nameInput').addEventListener('keydown', e=>{
+    if(e.key==='Enter' && !$('#startBtn').disabled) $('#startBtn').click();
+  });
+  $('#startBtn').onclick = () => {
+    clientName = $('#nameInput').value.trim();
+    if(!clientName) return;
+    $('#whoName').textContent = clientName;
+    $('#receiptClient').textContent = 'Para: ' + clientName;
+    $('#welcome').style.display = 'none';
+    $('#app').classList.add('active');
+  };
+  $('#changeNameBtn').onclick = () => {
+    $('#app').classList.remove('active');
+    $('#welcome').style.display = 'flex';
+    $('#nameInput').value = clientName;
+    $('#nameInput').focus();
+  };
+  $('#gearBtn').onclick = () => $('#settingsBox').classList.toggle('open');
+  $('#cfgSave').onclick = async () => {
+    config.shopName = $('#cfgShopName').value.trim() || DEFAULT_CONFIG.shopName;
+    config.waNumber = $('#cfgWaNumber').value.trim();
+    config.sheetUrl = $('#cfgSheetUrl').value.trim() || DEFAULT_CONFIG.sheetUrl;
+    $('#welcomeShop').textContent = config.shopName;
+    $('#topShopName').textContent = config.shopName;
+    $('#receiptShop').textContent = config.shopName;
+    await saveConfig();
+    toast('Configuración guardada');
+    loadCatalog(true);
+  };
+  $('#cfgReload').onclick = () => loadCatalog(true);
+  $('#sendBtn').onclick = sendOrder;
+  $('#mobileBar').addEventListener('click', () => {
+    document.querySelector('.receipt').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  (async function init(){
+    await loadConfig();
+    await loadCatalog(true);
+  })();
+})();
+</script>
+</body>
+</html>
