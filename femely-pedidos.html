@@ -188,6 +188,13 @@ button{font-family:inherit;}
 }
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--black);color:var(--gold-pale);padding:10px 18px;border-radius:8px;font-size:12.5px;opacity:0;transition:all .25s;pointer-events:none;z-index:60;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* Ocultar el badge "Powered by Netlify" que se inyecta en sitios publicados con Netlify Drop */
+#netlify-badge,
+.netlify-badge,
+div[id*="netlify-badge"],
+a[href*="netlify.com"]{
+  display:none !important;
+}
 </style>
 </head>
 <body>
@@ -233,6 +240,9 @@ button{font-family:inherit;}
       <label>Enlace de tu Google Sheets</label>
       <input type="text" id="cfgSheetUrl" placeholder="https://docs.google.com/spreadsheets/d/.../edit">
       <div class="hint">El Sheets debe estar compartido como "Cualquier persona con el enlace puede ver".</div>
+      <label>Enlace de Google Apps Script (guarda el pedido en Drive)</label>
+      <input type="text" id="cfgAppsScriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+      <div class="hint">Si lo dejas vacío, el pedido se descargará al teléfono de la clienta como antes.</div>
       <div class="settings-actions">
         <button class="btn-gold" id="cfgSave">Guardar</button>
         <button class="btn-ghost" id="cfgReload">Recargar catálogo ahora</button>
@@ -271,13 +281,14 @@ button{font-family:inherit;}
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js" defer></script>
 <script>
 (function(){
   const DEFAULT_CONFIG = {
     shopName: 'Femely Cosmetics',
     waNumber: '584246012696',
-    sheetUrl: 'https://docs.google.com/spreadsheets/d/1eZWsEJJTkw9dwzY9xkaP5qB1VcY6rtHE81z5LSqsk3g/edit?usp=drivesdk'
+    sheetUrl: 'https://docs.google.com/spreadsheets/d/1eZWsEJJTkw9dwzY9xkaP5qB1VcY6rtHE81z5LSqsk3g/edit?usp=drivesdk',
+    appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwafFAAId-k62MZDt7SEUV24C4xvnz9mjVa5OomPOZrSVjCuXjOdoNxuopEBowAWfRW/exec'
   };
   const COLLECTION_PRICE = 250;
 
@@ -712,35 +723,112 @@ button{font-family:inherit;}
     $('#mobileSummary').innerHTML = `${count} artículo${count===1?'':'s'} · ${(total/COLLECTION_PRICE).toFixed(2)} col. · <b>${fmt(total)}</b>`;
   }
 
-  function buildOrderSheetData(){
+  const XLSX_STYLES = {
+    brandTitle: { font:{bold:true, sz:16, color:{rgb:'B9922F'}}, alignment:{vertical:'center'} },
+    nameLabel: { font:{bold:true, sz:11, color:{rgb:'8C8270'}} },
+    nameValue: { font:{bold:true, sz:13, color:{rgb:'141210'}} },
+    colHeader: { font:{bold:true, sz:11, color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:'141210'}},
+      alignment:{horizontal:'center', vertical:'center'},
+      border:{top:{style:'thin',color:{rgb:'141210'}},bottom:{style:'thin',color:{rgb:'141210'}},left:{style:'thin',color:{rgb:'141210'}},right:{style:'thin',color:{rgb:'141210'}}} },
+    category: { font:{bold:true, sz:11, color:{rgb:'7A5F18'}}, fill:{fgColor:{rgb:'F4E9CF'}}, alignment:{vertical:'center'} },
+    codeCell: { font:{sz:10, color:{rgb:'8C8270'}}, border:{bottom:{style:'hair',color:{rgb:'E6DDC7'}}} },
+    nameCell: { font:{sz:11}, border:{bottom:{style:'hair',color:{rgb:'E6DDC7'}}} },
+    priceCell: { font:{sz:11}, numFmt:'"$"#,##0.00', border:{bottom:{style:'hair',color:{rgb:'E6DDC7'}}} },
+    qtyCell: { font:{bold:true, sz:11}, alignment:{horizontal:'center'}, border:{bottom:{style:'hair',color:{rgb:'E6DDC7'}}} },
+    subCell: { font:{bold:true, sz:11, color:{rgb:'7A5F18'}}, numFmt:'"$"#,##0.00', border:{bottom:{style:'hair',color:{rgb:'E6DDC7'}}} },
+    totalLabel: { font:{bold:true, sz:12, color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:'141210'}}, alignment:{horizontal:'right'} },
+    totalValue: { font:{bold:true, sz:12, color:{rgb:'B9922F'}}, fill:{fgColor:{rgb:'141210'}}, numFmt:'"$"#,##0.00' },
+    collLabel: { font:{bold:true, sz:11, color:{rgb:'7A5F18'}}, fill:{fgColor:{rgb:'F4E9CF'}}, alignment:{horizontal:'right'} },
+    collValue: { font:{bold:true, sz:11, color:{rgb:'7A5F18'}}, fill:{fgColor:{rgb:'F4E9CF'}} }
+  };
+
+  function buildOrderSheetRows(){
     // Replica la plantilla "FORMATO DE ENTREGA": NOMBRE arriba, encabezado,
     // luego cada categoría con su lista completa de productos y la cantidad pedida.
+    // Cada fila lleva { cells:[{v, s, z?}], merge?: [c1,c2] } para poder aplicar estilos luego.
     const rows = [];
-    rows.push(['NOMBRE', clientName]);
-    rows.push([]);
-    rows.push([]);
-    rows.push([]);
-    rows.push([]);
-    rows.push(['CODIGO','PRODUCTO','PRECIO','CANTIDAD','TOTAL']);
+    rows.push({cells:[{v:config.shopName, s:XLSX_STYLES.brandTitle}]});
+    rows.push({cells:[]});
+    rows.push({cells:[{v:'NOMBRE', s:XLSX_STYLES.nameLabel},{v:clientName, s:XLSX_STYLES.nameValue}]});
+    rows.push({cells:[]});
+    rows.push({cells:[
+      {v:'CODIGO', s:XLSX_STYLES.colHeader},{v:'PRODUCTO', s:XLSX_STYLES.colHeader},
+      {v:'PRECIO', s:XLSX_STYLES.colHeader},{v:'CANTIDAD', s:XLSX_STYLES.colHeader},
+      {v:'TOTAL', s:XLSX_STYLES.colHeader}
+    ]});
 
     const catsInOrder = [];
     products.forEach(p => { if(!catsInOrder.includes(p.cat)) catsInOrder.push(p.cat); });
 
     let grandTotal = 0;
     catsInOrder.forEach(cat=>{
-      rows.push(['', titleCase(cat), '', '', '']);
+      rows.push({cells:[
+        {v:'', s:XLSX_STYLES.category},{v:titleCase(cat), s:XLSX_STYLES.category},
+        {v:'', s:XLSX_STYLES.category},{v:'', s:XLSX_STYLES.category},{v:'', s:XLSX_STYLES.category}
+      ], merge:[1,4]});
       products.filter(p=>p.cat===cat).forEach(p=>{
         const qty = cart[p.code] || 0;
         const sub = qty ? +(p.price * qty).toFixed(2) : 0;
         grandTotal += sub;
-        rows.push([p.code, titleCase(p.name), +p.price.toFixed(2), qty || '', sub || 0]);
+        rows.push({cells:[
+          {v:p.code, s:XLSX_STYLES.codeCell},
+          {v:titleCase(p.name), s:XLSX_STYLES.nameCell},
+          {v:+p.price.toFixed(2), s:XLSX_STYLES.priceCell},
+          {v:qty || '', s:XLSX_STYLES.qtyCell},
+          {v:sub || '', s:XLSX_STYLES.subCell}
+        ]});
       });
     });
 
-    rows.push([]);
-    rows.push(['', '', '', 'TOTAL', +grandTotal.toFixed(2)]);
-    rows.push(['', '', '', 'COLECCIONES (÷'+COLLECTION_PRICE+')', +(grandTotal/COLLECTION_PRICE).toFixed(2)]);
+    rows.push({cells:[]});
+    rows.push({cells:[
+      {v:'', s:XLSX_STYLES.totalLabel},{v:'', s:XLSX_STYLES.totalLabel},{v:'', s:XLSX_STYLES.totalLabel},
+      {v:'TOTAL', s:XLSX_STYLES.totalLabel},{v:+grandTotal.toFixed(2), s:XLSX_STYLES.totalValue}
+    ]});
+    rows.push({cells:[
+      {v:'', s:XLSX_STYLES.collLabel},{v:'', s:XLSX_STYLES.collLabel},{v:'', s:XLSX_STYLES.collLabel},
+      {v:'COLECCIONES (÷'+COLLECTION_PRICE+')', s:XLSX_STYLES.collLabel},
+      {v:+(grandTotal/COLLECTION_PRICE).toFixed(2), s:XLSX_STYLES.collValue}
+    ]});
     return rows;
+  }
+
+  function buildStyledWorksheet(){
+    const rows = buildOrderSheetRows();
+    const ws = {};
+    const range = {s:{r:0,c:0}, e:{r:rows.length-1, c:4}};
+    rows.forEach((row, r)=>{
+      row.cells.forEach((cell, c)=>{
+        if(cell.v === '' || cell.v == null){
+          if(!cell.s) return;
+        }
+        const addr = XLSX.utils.encode_cell({r, c});
+        const type = typeof cell.v === 'number' ? 'n' : 's';
+        ws[addr] = {v: cell.v, t: type, s: cell.s};
+        if(cell.s && cell.s.numFmt) ws[addr].z = cell.s.numFmt;
+      });
+    });
+    ws['!ref'] = XLSX.utils.encode_range(range);
+    ws['!cols'] = [{wch:12},{wch:46},{wch:12},{wch:11},{wch:12}];
+    ws['!rows'] = [{hpt:22}];
+    const merges = [];
+    rows.forEach((row, r)=>{ if(row.merge) merges.push({s:{r,c:row.merge[0]}, e:{r,c:row.merge[1]}}); });
+    merges.push({s:{r:0,c:0}, e:{r:0,c:4}}); // título de la tienda
+    ws['!merges'] = merges;
+    return ws;
+  }
+
+  function excelFileName(){
+    const safeName = (clientName||'pedido').trim().replace(/[^a-zA-Z0-9]+/g,'-');
+    const dateStr = new Date().toISOString().slice(0,10);
+    return `pedido-${safeName}-${dateStr}.xlsx`;
+  }
+
+  function buildWorkbook(){
+    const ws = buildStyledWorksheet();
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Pedido');
+    return wb;
   }
 
   function downloadExcel(){
@@ -748,42 +836,92 @@ button{font-family:inherit;}
       toast('No se pudo cargar el generador de Excel. Intenta de nuevo en unos segundos.');
       return;
     }
-    const data = buildOrderSheetData();
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    ws['!cols'] = [{wch:12},{wch:48},{wch:10},{wch:11},{wch:11}];
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Pedido');
-    const safeName = (clientName||'pedido').trim().replace(/[^a-zA-Z0-9]+/g,'-');
-    const dateStr = new Date().toISOString().slice(0,10);
-    XLSX.writeFile(wb, `pedido-${safeName}-${dateStr}.xlsx`);
+    XLSX.writeFile(buildWorkbook(), excelFileName());
   }
 
-  function buildMessage(){
+  function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
+
+  // Sube el Excel del pedido al Google Apps Script configurado, que lo guarda
+  // en Drive y devuelve un link público. Se envía como text/plain para que el
+  // navegador no dispare un preflight CORS que Apps Script no sabe responder.
+  async function uploadOrderToDrive(){
+    const base64 = XLSX.write(buildWorkbook(), {bookType:'xlsx', type:'base64'});
+    const res = await fetch(config.appsScriptUrl, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        fileBase64: base64,
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        fileName: excelFileName()
+      })
+    });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if(!data.success) throw new Error(data.error || 'El script no devolvió un link');
+    return data.link;
+  }
+
+  function buildMessage(link){
     const lines = [];
     lines.push(`🧾 *Nuevo pedido - ${config.shopName}*`);
     lines.push(`Cliente: ${clientName}`);
     lines.push('');
-    lines.push('📎 Adjunto el archivo con el detalle del pedido.');
+    if(link){
+      lines.push(`📎 Pedido: ${link}`);
+    } else {
+      lines.push('📎 Adjunto el archivo con el detalle del pedido.');
+    }
     return lines.join('\n');
   }
 
-  function sendOrder(){
+  function updateSendButtonLabel(){
+    const btn = $('#sendBtn');
+    if(!btn || btn.disabled && btn.textContent.includes('…')) return; // no pisar un texto de "en proceso"
+    btn.textContent = config.appsScriptUrl ? 'Enviar pedido por WhatsApp' : '⬇ Descargar y enviar por WhatsApp';
+  }
+
+  function openWhatsApp(number, link){
+    const text = encodeURIComponent(buildMessage(link));
+    window.open(`https://wa.me/${number}?text=${text}`, '_blank');
+  }
+
+  async function sendOrder(){
     const number = (config.waNumber||'').replace(/[^0-9]/g,'');
     if(!number){ toast('Configura el número de WhatsApp en ⚙️'); return; }
+    if(typeof XLSX === 'undefined'){
+      toast('No se pudo cargar el generador de Excel. Intenta de nuevo en unos segundos.');
+      return;
+    }
     const btn = $('#sendBtn');
     btn.disabled = true;
-    btn.textContent = 'Descargando archivo…';
-    downloadExcel();
-    setTimeout(() => {
+
+    if(config.appsScriptUrl){
+      btn.textContent = 'Generando pedido…';
+      try{
+        const link = await uploadOrderToDrive();
+        toast('✅ Pedido guardado');
+        btn.textContent = 'Abriendo WhatsApp…';
+        openWhatsApp(number, link);
+      }catch(err){
+        toast('No se pudo guardar en Drive — se descarga el archivo en su lugar');
+        btn.textContent = 'Descargando archivo…';
+        downloadExcel();
+        await sleep(900);
+        btn.textContent = 'Abriendo WhatsApp…';
+        openWhatsApp(number, null);
+      }
+    } else {
+      btn.textContent = 'Descargando archivo…';
+      downloadExcel();
+      await sleep(900);
       toast('📥 Archivo descargado');
       btn.textContent = 'Abriendo WhatsApp…';
-      setTimeout(() => {
-        const text = encodeURIComponent(buildMessage());
-        window.open(`https://wa.me/${number}?text=${text}`, '_blank');
-        btn.textContent = '⬇ Descargar y enviar por WhatsApp';
-        btn.disabled = Object.keys(cart).length === 0;
-      }, 900);
-    }, 900);
+      await sleep(900);
+      openWhatsApp(number, null);
+    }
+
+    updateSendButtonLabel();
+    btn.disabled = Object.keys(cart).length === 0;
   }
 
   // ---- init / config persistence ----
@@ -818,6 +956,8 @@ button{font-family:inherit;}
     $('#cfgShopName').value = config.shopName;
     $('#cfgWaNumber').value = config.waNumber;
     $('#cfgSheetUrl').value = config.sheetUrl;
+    $('#cfgAppsScriptUrl').value = config.appsScriptUrl || '';
+    updateSendButtonLabel();
   }
 
   async function saveConfig(){
@@ -851,11 +991,13 @@ button{font-family:inherit;}
     config.shopName = $('#cfgShopName').value.trim() || DEFAULT_CONFIG.shopName;
     config.waNumber = $('#cfgWaNumber').value.trim();
     config.sheetUrl = $('#cfgSheetUrl').value.trim() || DEFAULT_CONFIG.sheetUrl;
+    config.appsScriptUrl = $('#cfgAppsScriptUrl').value.trim();
     $('#welcomeShop').textContent = config.shopName;
     $('#topShopName').textContent = config.shopName;
     $('#receiptShop').textContent = config.shopName;
     await saveConfig();
     toast('Configuración guardada');
+    updateSendButtonLabel();
     loadCatalog(true);
   };
   $('#cfgReload').onclick = () => loadCatalog(true);
