@@ -844,21 +844,64 @@ a[href*="netlify.com"]{
   // Sube el Excel del pedido al Google Apps Script configurado, que lo guarda
   // en Drive y devuelve un link público. Se envía como text/plain para que el
   // navegador no dispare un preflight CORS que Apps Script no sabe responder.
-  async function uploadOrderToDrive(){
-    const base64 = XLSX.write(buildWorkbook(), {bookType:'xlsx', type:'base64'});
-    const res = await fetch(config.appsScriptUrl, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({
-        fileBase64: base64,
-        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        fileName: excelFileName()
-      })
+  // Sube el pedido a Drive mediante un <form> oculto que se envía dentro de un
+  // iframe invisible, y el Apps Script responde con una página que le manda el
+  // resultado a esta ventana con postMessage. Este método evita por completo los
+  // bloqueos de CORS que a veces impiden usar fetch() directo contra Apps Script.
+  function uploadOrderToDrive(){
+    return new Promise((resolve, reject) => {
+      const base64 = XLSX.write(buildWorkbook(), {bookType:'xlsx', type:'base64'});
+      const fileName = excelFileName();
+      const frameId = 'upload-frame-' + Date.now();
+
+      const iframe = document.createElement('iframe');
+      iframe.name = frameId;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = config.appsScriptUrl;
+      form.target = frameId;
+      form.style.display = 'none';
+
+      const addField = (name, value) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      };
+      addField('fileBase64', base64);
+      addField('mimeType', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      addField('fileName', fileName);
+      document.body.appendChild(form);
+
+      let settled = false;
+      const cleanup = () => {
+        window.removeEventListener('message', onMessage);
+        clearTimeout(timer);
+        form.remove();
+        setTimeout(() => iframe.remove(), 500);
+      };
+      const onMessage = (event) => {
+        if(settled || !event.data || typeof event.data.success === 'undefined') return;
+        settled = true;
+        cleanup();
+        if(event.data.success) resolve(event.data.link);
+        else reject(new Error(event.data.error || 'El script no devolvió un link'));
+      };
+      window.addEventListener('message', onMessage);
+
+      const timer = setTimeout(() => {
+        if(settled) return;
+        settled = true;
+        cleanup();
+        reject(new Error('Tiempo de espera agotado'));
+      }, 15000);
+
+      form.submit();
     });
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    if(!data.success) throw new Error(data.error || 'El script no devolvió un link');
-    return data.link;
   }
 
   function buildMessage(link){
