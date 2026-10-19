@@ -6,7 +6,7 @@
 <title>Femely Cosmetics — Pedidos</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap');
-
+ 
 :root{
   --gold:#b9922f;
   --gold-light:#e3c579;
@@ -24,7 +24,7 @@
 body{margin:0;background:var(--cream);color:var(--ink);font-family:'Manrope',sans-serif;}
 h1,h2,h3{font-family:'Fraunces',serif;}
 button{font-family:inherit;}
-
+ 
 /* ---------- Welcome screen ---------- */
 #welcome{
   min-height:100vh;background:var(--black);color:var(--gold-pale);
@@ -59,11 +59,11 @@ button{font-family:inherit;}
 #startBtn:hover{background:var(--gold-light);}
 #startBtn:active{transform:scale(0.97);}
 #startBtn:disabled{background:#4a4438;color:#8c8270;cursor:not-allowed;}
-
+ 
 /* ---------- Catalog app ---------- */
 #app{display:none;}
 #app.active{display:block;}
-
+ 
 .topbar{background:var(--black);color:var(--white);padding:16px 20px;position:sticky;top:0;z-index:30;}
 .topbar-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;}
 .brand-mini{display:flex;align-items:center;gap:10px;}
@@ -74,13 +74,13 @@ button{font-family:inherit;}
 .topbar-actions{display:flex;align-items:center;gap:10px;}
 .iconbtn{width:34px;height:34px;border-radius:50%;border:1px solid #423c2f;background:transparent;color:var(--gold-pale);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
 .iconbtn:hover{border-color:var(--gold);color:var(--gold-light);}
-
+ 
 .catbar{background:var(--white);border-bottom:1px solid var(--line);position:sticky;top:65px;z-index:29;overflow-x:auto;white-space:nowrap;padding:12px 20px;}
 .catbar-inner{max-width:1100px;margin:0 auto;display:flex;gap:8px;}
 .pill{border:1.3px solid var(--line);background:var(--white);color:var(--ink);padding:7px 15px;border-radius:20px;font-size:12.5px;font-weight:600;cursor:pointer;flex-shrink:0;}
 .pill.active{background:var(--black);border-color:var(--black);color:var(--gold-light);}
 .pill:not(.active):hover{border-color:var(--gold);}
-
+ 
 .settings{max-width:1100px;margin:16px auto 0;padding:0 20px;}
 .settings-box{background:var(--white);border:1.5px solid var(--black);border-radius:10px;padding:18px 20px;display:none;margin-bottom:6px;}
 .settings-box.open{display:block;}
@@ -94,20 +94,20 @@ button{font-family:inherit;}
 .btn-gold{background:var(--gold);color:var(--black);}
 .btn-gold:hover{background:var(--gold-light);}
 .btn-ghost{background:transparent;color:var(--ink);border:1.3px solid var(--line) !important;}
-
+ 
 .status-banner{max-width:1100px;margin:14px auto 0;padding:0 20px;}
 .banner{border-radius:8px;padding:11px 15px;font-size:12.5px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
 .banner.warn{background:#fbeee1;color:#8a4a17;border:1px solid #edcda3;}
 .banner.loading{background:var(--gold-pale);color:#6b551c;border:1px solid var(--gold-light);}
 .banner button{background:none;border:1px solid currentColor;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;color:inherit;flex-shrink:0;}
-
+ 
 .layout{max-width:1100px;margin:0 auto;padding:18px 20px 110px;display:grid;grid-template-columns:1fr 300px;gap:26px;align-items:start;}
 @media (max-width:860px){.layout{grid-template-columns:1fr;}}
-
+ 
 .cat-section{margin-bottom:30px;}
 .cat-title{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:10px;margin-bottom:14px;}
 .cat-title::after{content:'';flex:1;height:1px;background:var(--line);}
-
+ 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
 .card{background:var(--white);border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative;display:flex;flex-direction:column;}
 .card .topline{height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light));}
@@ -121,7 +121,7 @@ button{font-family:inherit;}
 .pcode{font-size:10px;color:var(--muted);margin-bottom:5px;}
 .pprice{font-family:'Fraunces',serif;font-weight:600;color:var(--gold);font-size:15px;margin-bottom:10px;}
 .card.out .pname, .card.out .pprice{opacity:.45;}
-
+ 
 .qty-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;gap:6px;}
 .group-card{grid-column:1/-1;}
 .group-hint{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;padding:12px 14px 2px;}
@@ -147,16 +147,16 @@ button{font-family:inherit;}
 .qty-row input{width:38px;text-align:center;border:1.3px solid var(--line);border-radius:6px;padding:5px 2px;font-size:13px;font-weight:700;background:var(--cream);}
 .qty-row input:focus{outline:none;border-color:var(--gold);}
 .out-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:center;padding:6px 0;background:var(--cream);border-radius:6px;}
-
+ 
 .empty-state{border:1.5px dashed var(--line);border-radius:10px;padding:36px 18px;text-align:center;color:var(--muted);font-size:13.5px;grid-column:1/-1;}
-
+ 
 /* ---------- Receipt / order panel ---------- */
 .receipt{background:var(--black);color:var(--gold-pale);border-radius:12px;position:sticky;top:150px;overflow:hidden;box-shadow:0 10px 26px rgba(20,18,16,.18);}
 .receipt-head{padding:18px 18px 12px;text-align:center;border-bottom:1px dashed #3c362a;}
 .receipt-head .rl{font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);}
 .receipt-head .rn{font-family:'Fraunces',serif;font-style:italic;font-size:19px;color:var(--white);margin-top:4px;}
 .receipt-head .rc{font-size:11.5px;color:var(--gold-pale);opacity:.8;margin-top:6px;}
-
+ 
 .rlines{padding:10px 18px;max-height:280px;overflow-y:auto;}
 .rline{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 0;border-bottom:1px dotted #3c362a;font-size:12px;}
 .rline .rl-name{flex:1;line-height:1.3;}
@@ -164,12 +164,12 @@ button{font-family:inherit;}
 .rline .rl-sub{font-weight:700;min-width:52px;text-align:right;}
 .rline .rl-x{color:#8f7f4f;cursor:pointer;font-size:13px;}
 .rempty{text-align:center;font-size:12px;color:#8f7f4f;padding:18px 0;}
-
+ 
 .rtotals{padding:12px 18px 16px;border-top:1px dashed #3c362a;}
 .trow{display:flex;justify-content:space-between;font-size:12.5px;padding:2px 0;color:var(--gold-pale);}
 .trow.total{font-size:16.5px;font-weight:700;color:var(--white);border-top:1px solid #423c2f;margin-top:6px;padding-top:9px;}
 .trow.total span:last-child{color:var(--gold-light);}
-
+ 
 .sendbtn{display:block;width:calc(100% - 36px);margin:2px 18px 18px;background:var(--gold);color:var(--black);border:none;border-radius:8px;padding:13px;font-weight:800;font-size:12.5px;text-transform:uppercase;letter-spacing:.8px;cursor:pointer;text-align:center;}
 .sendbtn:hover{background:var(--gold-light);}
 .sendbtn:disabled{background:#3c362a;color:#7a715c;cursor:not-allowed;}
@@ -177,7 +177,7 @@ button{font-family:inherit;}
 .sendbtn.secondary:hover{background:rgba(185,146,47,0.12);}
 .sendbtn.secondary:disabled{border-color:#3c362a;color:#7a715c;}
 .wa-hint{font-size:10.5px;color:#8f7f4f;text-align:center;padding:0 18px 16px;line-height:1.5;}
-
+ 
 .mobile-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--black);color:var(--white);padding:13px 18px;justify-content:space-between;align-items:center;z-index:40;cursor:pointer;}
 .mobile-bar .msum{font-size:13px;}
 .mobile-bar .msum b{color:var(--gold-light);}
@@ -198,7 +198,7 @@ a[href*="netlify.com"]{
 </style>
 </head>
 <body>
-
+ 
 <!-- WELCOME -->
 <div id="welcome">
   <div class="brandmark"><span>RG</span></div>
@@ -211,7 +211,7 @@ a[href*="netlify.com"]{
   </div>
   <button id="startBtn" disabled>Realizar pedido</button>
 </div>
-
+ 
 <!-- APP -->
 <div id="app">
   <div class="topbar">
@@ -226,11 +226,11 @@ a[href*="netlify.com"]{
       </div>
     </div>
   </div>
-
+ 
   <div class="catbar">
     <div class="catbar-inner" id="catPills"></div>
   </div>
-
+ 
   <div class="settings">
     <div class="settings-box" id="settingsBox">
       <label>Nombre del negocio</label>
@@ -249,12 +249,12 @@ a[href*="netlify.com"]{
       </div>
     </div>
   </div>
-
+ 
   <div class="status-banner" id="statusBanner"></div>
-
+ 
   <div class="layout">
     <div id="catalogRoot"></div>
-
+ 
     <div>
       <div class="receipt">
         <div class="receipt-head">
@@ -274,13 +274,13 @@ a[href*="netlify.com"]{
     </div>
   </div>
 </div>
-
+ 
 <div class="mobile-bar" id="mobileBar">
   <span class="msum" id="mobileSummary">0 artículos · 0 colecciones · <b>$0.00</b></span>
   <span>Ver pedido ↑</span>
 </div>
 <div class="toast" id="toast"></div>
-
+ 
 <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js" defer></script>
 <script>
 (function(){
@@ -291,7 +291,7 @@ a[href*="netlify.com"]{
     appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwafFAAId-k62MZDt7SEUV24C4xvnz9mjVa5OomPOZrSVjCuXjOdoNxuopEBowAWfRW/exec'
   };
   const COLLECTION_PRICE = 250;
-
+ 
   // Fallback snapshot in case the live Google Sheets fetch fails (CORS / offline / not shared publicly).
   const FALLBACK_PRODUCTS = [
     ['LINEA CAPILAR','PT-000101','BAÑO DE CREMA SILICONE / GERMEN DE TRIGO 240gr',8.70,'https://femelycosmetics.com.ve/wp-content/uploads/2024/09/Bano-de-Crema-Germen-de-Trigo-03-1024x908.webp',true],
@@ -391,32 +391,32 @@ a[href*="netlify.com"]{
     ['LINEA FACIAL','PT-001003','LIMPIADORA FACIAL (CUTIS SECO)120gr',7.00,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-23-324x1024.webp',true],
     ['LINEA FACIAL','PT-001004','JABON LIQUIDO FACIAL 120ML',7.20,'https://femelycosmetics.com.ve/wp-content/uploads/2024/12/download-25-324x1024.webp',true]
   ].map(r => ({cat:r[0], code:r[1], name:r[2], price:r[3], img:r[4], avail:r[5]}));
-
+ 
   let config = Object.assign({}, DEFAULT_CONFIG);
   let products = [];
   let cart = {}; // code -> qty
   let activeCat = 'TODAS';
   let clientName = '';
-
+ 
   const $ = sel => document.querySelector(sel);
   const esc = s => { const d=document.createElement('div'); d.textContent = s==null?'':String(s); return d.innerHTML; };
   const fmt = n => '$' + Number(n||0).toFixed(2);
-
+ 
   function toast(msg){
     const t = $('#toast');
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'), 2200);
   }
-
+ 
   function titleCase(s){
     return String(s||'').toLowerCase().replace(/(^|\s)\S/g, c => c.toUpperCase());
   }
-
+ 
   function normalize(s){
     return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
   }
-
+ 
   function extractSheetId(url){
     const m = String(url||'').match(/\/d\/([a-zA-Z0-9-_]+)/);
     return m ? m[1] : null;
@@ -425,7 +425,7 @@ a[href*="netlify.com"]{
     const m = String(url||'').match(/[?&#]gid=([0-9]+)/);
     return m ? m[1] : '0';
   }
-
+ 
   function parsePrice(raw){
     if(raw == null) return 0;
     let s = String(raw).replace(/[^0-9.,]/g,'').trim();
@@ -438,12 +438,12 @@ a[href*="netlify.com"]{
     const n = parseFloat(s);
     return isNaN(n) ? 0 : n;
   }
-
+ 
   function isAvailable(raw){
     const n = normalize(raw);
     return n.startsWith('disp') || n === 'si' || n === 'sí' || n === 'true' || n === '1';
   }
-
+ 
   function parseCSV(str){
     const rows = [];
     let row = [], field = '', inQuotes = false;
@@ -464,7 +464,7 @@ a[href*="netlify.com"]{
     if(field.length>0 || row.length>0){ row.push(field); rows.push(row); }
     return rows;
   }
-
+ 
   function productsFromCSV(text){
     const rows = parseCSV(text);
     let headerIdx = -1, cols = {};
@@ -484,7 +484,7 @@ a[href*="netlify.com"]{
       }
     }
     if(headerIdx === -1) throw new Error('No se encontró la fila de encabezados');
-
+ 
     const out = [];
     for(let i=headerIdx+1;i<rows.length;i++){
       const r = rows[i];
@@ -503,7 +503,7 @@ a[href*="netlify.com"]{
     }
     return out;
   }
-
+ 
   async function fetchLiveCatalog(){
     const id = extractSheetId(config.sheetUrl);
     if(!id) throw new Error('Enlace de Sheets inválido');
@@ -516,11 +516,11 @@ a[href*="netlify.com"]{
     if(!parsed.length) throw new Error('El Sheets no devolvió productos');
     return parsed;
   }
-
+ 
   function setBanner(html){
     $('#statusBanner').innerHTML = html || '';
   }
-
+ 
   async function loadCatalog(showLoading){
     if(showLoading){
       setBanner('<div class="banner loading">Cargando catálogo en vivo desde Google Sheets…</div>');
@@ -538,7 +538,7 @@ a[href*="netlify.com"]{
     renderCatalog();
     renderCart();
   }
-
+ 
   function buildCategoryPills(){
     const cats = ['TODAS', ...Array.from(new Set(products.map(p=>p.cat)))];
     const wrap = $('#catPills');
@@ -551,7 +551,7 @@ a[href*="netlify.com"]{
       wrap.appendChild(btn);
     });
   }
-
+ 
   function groupByImage(items){
     const byImg = {};
     items.forEach(p=>{
@@ -575,7 +575,7 @@ a[href*="netlify.com"]{
     });
     return grouped;
   }
-
+ 
   function wireQtyControls(scope, p){
     const input = scope.querySelector(`input[data-code="${cssEsc(p.code)}"]`);
     const minus = scope.querySelector(`[data-act="minus"][data-code="${cssEsc(p.code)}"]`);
@@ -584,9 +584,9 @@ a[href*="netlify.com"]{
     plus.onclick = () => setQty(p.code, (cart[p.code]||0) + 1);
     input.addEventListener('change', e => setQty(p.code, parseInt(e.target.value)||0));
   }
-
+ 
   function cssEsc(s){ return String(s).replace(/"/g,'\\"'); }
-
+ 
   function renderSingleCard(p){
     const card = document.createElement('div');
     card.className = 'card' + (p.avail ? '' : ' out');
@@ -613,7 +613,7 @@ a[href*="netlify.com"]{
     if(p.avail) wireQtyControls(card, p);
     return card;
   }
-
+ 
   function renderGroupCard(img, group){
     const card = document.createElement('div');
     card.className = 'card group-card';
@@ -649,19 +649,19 @@ a[href*="netlify.com"]{
     group.forEach(p => { if(p.avail) wireQtyControls(card, p); });
     return card;
   }
-
+ 
   function renderCatalog(){
     const root = $('#catalogRoot');
     root.innerHTML = '';
     const cats = activeCat === 'TODAS'
       ? Array.from(new Set(products.map(p=>p.cat)))
       : [activeCat];
-
+ 
     if(products.length === 0){
       root.innerHTML = '<div class="empty-state">No hay productos disponibles por ahora.</div>';
       return;
     }
-
+ 
     cats.forEach(cat=>{
       const items = products.filter(p=>p.cat===cat);
       if(!items.length) return;
@@ -680,20 +680,20 @@ a[href*="netlify.com"]{
       root.appendChild(section);
     });
   }
-
+ 
   function setQty(code, qty){
     if(qty <= 0) delete cart[code];
     else cart[code] = qty;
     renderCatalog();
     renderCart();
   }
-
+ 
   function renderCart(){
     const codes = Object.keys(cart);
     const wrap = $('#rlines');
     wrap.innerHTML = '';
     let total = 0, count = 0;
-
+ 
     if(codes.length === 0){
       wrap.innerHTML = '<div class="rempty">El pedido está vacío</div>';
     } else {
@@ -715,14 +715,14 @@ a[href*="netlify.com"]{
         wrap.appendChild(line);
       });
     }
-
+ 
     $('#itemCount').textContent = count;
     $('#cartTotal').textContent = fmt(total);
     $('#collectionsCount').textContent = (total / COLLECTION_PRICE).toFixed(2);
     $('#sendBtn').disabled = count === 0;
     $('#mobileSummary').innerHTML = `${count} artículo${count===1?'':'s'} · ${(total/COLLECTION_PRICE).toFixed(2)} col. · <b>${fmt(total)}</b>`;
   }
-
+ 
   const XLSX_STYLES = {
     brandTitle: { font:{bold:true, sz:16, color:{rgb:'B9922F'}}, alignment:{vertical:'center'} },
     nameLabel: { font:{bold:true, sz:11, color:{rgb:'8C8270'}} },
@@ -741,7 +741,7 @@ a[href*="netlify.com"]{
     collLabel: { font:{bold:true, sz:11, color:{rgb:'7A5F18'}}, fill:{fgColor:{rgb:'F4E9CF'}}, alignment:{horizontal:'right'} },
     collValue: { font:{bold:true, sz:11, color:{rgb:'7A5F18'}}, fill:{fgColor:{rgb:'F4E9CF'}} }
   };
-
+ 
   function buildOrderSheetRows(){
     // Replica la plantilla "FORMATO DE ENTREGA": NOMBRE arriba, encabezado,
     // luego cada categoría con su lista completa de productos y la cantidad pedida.
@@ -756,10 +756,10 @@ a[href*="netlify.com"]{
       {v:'PRECIO', s:XLSX_STYLES.colHeader},{v:'CANTIDAD', s:XLSX_STYLES.colHeader},
       {v:'TOTAL', s:XLSX_STYLES.colHeader}
     ]});
-
+ 
     const catsInOrder = [];
     products.forEach(p => { if(!catsInOrder.includes(p.cat)) catsInOrder.push(p.cat); });
-
+ 
     let grandTotal = 0;
     catsInOrder.forEach(cat=>{
       rows.push({cells:[
@@ -779,7 +779,7 @@ a[href*="netlify.com"]{
         ]});
       });
     });
-
+ 
     rows.push({cells:[]});
     rows.push({cells:[
       {v:'', s:XLSX_STYLES.totalLabel},{v:'', s:XLSX_STYLES.totalLabel},{v:'', s:XLSX_STYLES.totalLabel},
@@ -792,7 +792,7 @@ a[href*="netlify.com"]{
     ]});
     return rows;
   }
-
+ 
   function buildStyledWorksheet(){
     const rows = buildOrderSheetRows();
     const ws = {};
@@ -817,20 +817,20 @@ a[href*="netlify.com"]{
     ws['!merges'] = merges;
     return ws;
   }
-
+ 
   function excelFileName(){
     const safeName = (clientName||'pedido').trim().replace(/[^a-zA-Z0-9]+/g,'-');
     const dateStr = new Date().toISOString().slice(0,10);
     return `pedido-${safeName}-${dateStr}.xlsx`;
   }
-
+ 
   function buildWorkbook(){
     const ws = buildStyledWorksheet();
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Pedido');
     return wb;
   }
-
+ 
   function downloadExcel(){
     if(typeof XLSX === 'undefined'){
       toast('No se pudo cargar el generador de Excel. Intenta de nuevo en unos segundos.');
@@ -838,29 +838,72 @@ a[href*="netlify.com"]{
     }
     XLSX.writeFile(buildWorkbook(), excelFileName());
   }
-
+ 
   function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
-
+ 
   // Sube el Excel del pedido al Google Apps Script configurado, que lo guarda
   // en Drive y devuelve un link público. Se envía como text/plain para que el
   // navegador no dispare un preflight CORS que Apps Script no sabe responder.
-  async function uploadOrderToDrive(){
-    const base64 = XLSX.write(buildWorkbook(), {bookType:'xlsx', type:'base64'});
-    const res = await fetch(config.appsScriptUrl, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain;charset=utf-8'},
-      body: JSON.stringify({
-        fileBase64: base64,
-        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        fileName: excelFileName()
-      })
+  // Sube el pedido a Drive mediante un <form> oculto que se envía dentro de un
+  // iframe invisible, y el Apps Script responde con una página que le manda el
+  // resultado a esta ventana con postMessage. Este método evita por completo los
+  // bloqueos de CORS que a veces impiden usar fetch() directo contra Apps Script.
+  function uploadOrderToDrive(){
+    return new Promise((resolve, reject) => {
+      const base64 = XLSX.write(buildWorkbook(), {bookType:'xlsx', type:'base64'});
+      const fileName = excelFileName();
+      const frameId = 'upload-frame-' + Date.now();
+ 
+      const iframe = document.createElement('iframe');
+      iframe.name = frameId;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+ 
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = config.appsScriptUrl;
+      form.target = frameId;
+      form.style.display = 'none';
+ 
+      const addField = (name, value) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+      };
+      addField('fileBase64', base64);
+      addField('mimeType', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      addField('fileName', fileName);
+      document.body.appendChild(form);
+ 
+      let settled = false;
+      const cleanup = () => {
+        window.removeEventListener('message', onMessage);
+        clearTimeout(timer);
+        form.remove();
+        setTimeout(() => iframe.remove(), 500);
+      };
+      const onMessage = (event) => {
+        if(settled || !event.data || typeof event.data.success === 'undefined') return;
+        settled = true;
+        cleanup();
+        if(event.data.success) resolve(event.data.link);
+        else reject(new Error(event.data.error || 'El script no devolvió un link'));
+      };
+      window.addEventListener('message', onMessage);
+ 
+      const timer = setTimeout(() => {
+        if(settled) return;
+        settled = true;
+        cleanup();
+        reject(new Error('Tiempo de espera agotado'));
+      }, 15000);
+ 
+      form.submit();
     });
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    if(!data.success) throw new Error(data.error || 'El script no devolvió un link');
-    return data.link;
   }
-
+ 
   function buildMessage(link){
     const lines = [];
     lines.push(`🧾 *Nuevo pedido - ${config.shopName}*`);
@@ -873,18 +916,18 @@ a[href*="netlify.com"]{
     }
     return lines.join('\n');
   }
-
+ 
   function updateSendButtonLabel(){
     const btn = $('#sendBtn');
     if(!btn || btn.disabled && btn.textContent.includes('…')) return; // no pisar un texto de "en proceso"
     btn.textContent = config.appsScriptUrl ? 'Enviar pedido por WhatsApp' : '⬇ Descargar y enviar por WhatsApp';
   }
-
+ 
   function openWhatsApp(number, link){
     const text = encodeURIComponent(buildMessage(link));
     window.open(`https://wa.me/${number}?text=${text}`, '_blank');
   }
-
+ 
   async function sendOrder(){
     const number = (config.waNumber||'').replace(/[^0-9]/g,'');
     if(!number){ toast('Configura el número de WhatsApp en ⚙️'); return; }
@@ -894,7 +937,7 @@ a[href*="netlify.com"]{
     }
     const btn = $('#sendBtn');
     btn.disabled = true;
-
+ 
     if(config.appsScriptUrl){
       btn.textContent = 'Generando pedido…';
       try{
@@ -919,11 +962,11 @@ a[href*="netlify.com"]{
       await sleep(900);
       openWhatsApp(number, null);
     }
-
+ 
     updateSendButtonLabel();
     btn.disabled = Object.keys(cart).length === 0;
   }
-
+ 
   // ---- init / config persistence ----
   async function storageGet(key){
     try{
@@ -934,7 +977,7 @@ a[href*="netlify.com"]{
     }catch(e){ /* no disponible aquí, seguimos con el respaldo */ }
     try{ return localStorage.getItem(key); }catch(e){ return null; }
   }
-
+ 
   async function storageSet(key, value){
     try{
       if(window.storage && typeof window.storage.set === 'function'){
@@ -944,7 +987,7 @@ a[href*="netlify.com"]{
     }catch(e){ /* no disponible aquí, seguimos con el respaldo */ }
     try{ localStorage.setItem(key, value); return true; }catch(e){ return false; }
   }
-
+ 
   async function loadConfig(){
     try{
       const raw = await storageGet('femely-config');
@@ -959,12 +1002,12 @@ a[href*="netlify.com"]{
     $('#cfgAppsScriptUrl').value = config.appsScriptUrl || '';
     updateSendButtonLabel();
   }
-
+ 
   async function saveConfig(){
     const ok = await storageSet('femely-config', JSON.stringify(config));
     if(!ok) toast('No se pudo guardar la configuración');
   }
-
+ 
   // ---- wiring ----
   $('#nameInput').addEventListener('input', e=>{
     $('#startBtn').disabled = e.target.value.trim().length === 0;
@@ -1005,7 +1048,7 @@ a[href*="netlify.com"]{
   $('#mobileBar').addEventListener('click', () => {
     document.querySelector('.receipt').scrollIntoView({behavior:'smooth', block:'start'});
   });
-
+ 
   (async function init(){
     await loadConfig();
     await loadCatalog(true);
@@ -1014,4 +1057,5 @@ a[href*="netlify.com"]{
 </script>
 </body>
 </html>
+ 
 
